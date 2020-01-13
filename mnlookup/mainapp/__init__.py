@@ -137,6 +137,7 @@ def countries_chart():
         yaxis=dict(autorange="reversed"),
         margin={'l': 0, 'r': 0, 't': 0, 'b': 0},
         xaxis={'side': 'top', 'fixedrange': True},
+        yaxis={'fixedrange': True},
         height=300,
         plot_bgcolor='rgb(255,255,255)'
     )
@@ -162,6 +163,7 @@ def ases_chart():
         yaxis=dict(autorange="reversed"),
         margin={'l': 0, 'r': 0, 't': 0, 'b': 0},
         xaxis={'side': 'top', 'fixedrange': True},
+        yaxis={'fixedrange': True},
         height=300,
         plot_bgcolor='rgb(255,255,255)'
     )
@@ -186,6 +188,7 @@ def history_chart():
     _fig.update_layout(
         margin={'l': 0, 'r': 0, 't': 0, 'b': 0},
         xaxis={'fixedrange': True},
+        yaxis={'fixedrange': True},
         height=300,
         plot_bgcolor='rgb(255,255,255)'
     )
