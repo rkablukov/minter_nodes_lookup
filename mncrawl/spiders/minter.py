@@ -2,30 +2,30 @@
 import os
 import scrapy
 import json
-from urllib.parse import urlparse
+from urllib.parse import urlparse, urljoin
+from mncrawl.items import NodeItem, ConnectionItem, NodeStatusItem
 
-from simple_geoip import GeoIP
-API_KEY = os.environ.get('API_KEY', False)
-if not API_KEY:
-    raise Exception('API_KEY has not been defined.') 
-geoip = GeoIP(API_KEY)
+from sqlalchemy.orm import sessionmaker
+from mncrawl.models import NodeStatus, db_connect, create_table
 
 
 class MinterSpider(scrapy.Spider):
     name = 'minter'
     # allowed_domains = ['api.minter.one']
     # start_urls = ['https://api.minter.one/net_info']
-    start_urls = ['https://51.83.230.173/net_info']
-    unique_ips = set(line.strip() for line in open('ips.txt'))
 
-    def add_ip_to_set(self, ip):
-        if ip not in self.unique_ips:
-            geodata = geoip.lookup(ip)
-            self.unique_ips.add(ip)
-            with open('ips.txt', 'a') as f:
-                f.write('%s\n' % ip)
-            with open('geoips.txt', 'a') as f:
-                f.write('%s\n' % geodata)
+    def __init__(self):
+        engine = db_connect()
+        create_table(engine)
+        Session = sessionmaker(bind=engine)
+        session = Session()
+
+        rs = session.query(NodeStatus.api_url).filter(NodeStatus.api == True).all()
+        self.start_urls = ['%s/net_info' % x[0] for x in rs]
+        session.close()
+
+        if len(self.start_urls) == 0:
+            self.start_urls = ['http://116.202.85.179:8841/net_info']
 
     def parse(self, response):
         j = json.loads(response.text)
@@ -34,17 +34,39 @@ class MinterSpider(scrapy.Spider):
 
         parsed_uri = urlparse(response.url)
         node_ip = parsed_uri.hostname
-        self.add_ip_to_set(node_ip)
+        api_url = urljoin(response.url, '/')
+        yield NodeItem(ip=node_ip)
+
+        yield NodeStatusItem(
+            ip=node_ip,
+            api=True,
+            api_url=api_url,
+            full_node=False     # Статус full_node тут неизвестен
+        )
+
+        # Чекаем запрос full_node
+        yield scrapy.Request(
+            urljoin(api_url, '/coin_info?symbol=BTCSECURE&height=1000'), 
+            callback=self.parse_full_node_response
+        )
 
         peers = j['result']['peers']
         for peer in peers:
             remote_ip = peer['remote_ip']
-            self.add_ip_to_set(remote_ip)
+            yield NodeItem(ip=remote_ip)
+
+            yield NodeStatusItem(
+                ip=remote_ip,
+                api=False,          # Статус api тут неизвестен
+                api_url='',
+                full_node=False     # Статус full_node тут неизвестен
+            )
+
             # Сохраняем данные
-            yield {
-                'from': node_ip,
-                'to': remote_ip
-            }
+            yield ConnectionItem(
+                ip_from=node_ip,
+                ip_to=remote_ip
+            )
             # Добавляем новые запросы
             urls = [x % remote_ip for x in [
                 'http://%s:8841/net_info',
@@ -53,3 +75,19 @@ class MinterSpider(scrapy.Spider):
             ]]
             for url in urls:
                 yield scrapy.Request(url, callback=self.parse)
+
+    def parse_full_node_response(self, response):
+        j = json.loads(response.text)
+        if not 'result' in j:
+            return
+        
+        parsed_uri = urlparse(response.url)
+        node_ip = parsed_uri.hostname
+        api_url = urljoin(response.url, '/')
+
+        yield NodeStatusItem(
+            ip=node_ip,
+            api=True,
+            api_url=api_url,
+            full_node=True
+        )
