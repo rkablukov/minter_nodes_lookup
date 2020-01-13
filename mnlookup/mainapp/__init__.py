@@ -136,7 +136,7 @@ def countries_chart():
     fig_countries.update_layout(
         yaxis=dict(autorange="reversed"),
         margin={'l': 0, 'r': 0, 't': 0, 'b': 0},
-        xaxis={'side': 'top'},
+        xaxis={'side': 'top', 'fixedrange': True},
         height=300,
         plot_bgcolor='rgb(255,255,255)'
     )
@@ -161,7 +161,7 @@ def ases_chart():
     _fig.update_layout(
         yaxis=dict(autorange="reversed"),
         margin={'l': 0, 'r': 0, 't': 0, 'b': 0},
-        xaxis={'side': 'top'},
+        xaxis={'side': 'top', 'fixedrange': True},
         height=300,
         plot_bgcolor='rgb(255,255,255)'
     )
@@ -185,6 +185,7 @@ def history_chart():
     _fig = go.Figure(data=go.Scatter(x=dates, y=nodes))
     _fig.update_layout(
         margin={'l': 0, 'r': 0, 't': 0, 'b': 0},
+        xaxis={'fixedrange': True},
         height=300,
         plot_bgcolor='rgb(255,255,255)'
     )
