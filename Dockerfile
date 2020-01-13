@@ -4,6 +4,7 @@ RUN mkdir -p /usr/src/app
 WORKDIR /usr/src/app
 
 RUN apk add --update alpine-sdk
+RUN apk update && apk add gcc libc-dev make git libffi-dev openssl-dev python3-dev libxml2-dev libxslt-dev
 
 COPY ./requirements.txt /usr/src/app
 RUN pip install --upgrade pip
