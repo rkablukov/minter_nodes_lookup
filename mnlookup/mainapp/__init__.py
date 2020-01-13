@@ -21,7 +21,7 @@ def navbar():
     """
     navbar = dbc.NavbarSimple(
         children=[
-            #dbc.NavItem(dbc.NavLink("Link", href="#")),
+            dbc.NavItem(dbc.NavLink("Monster Graphs", href="https://mnst.vemark.ru")),
             #dbc.DropdownMenu(
             #    nav=True,
             #    in_navbar=True,
