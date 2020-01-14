@@ -34,7 +34,7 @@ class NodePipeline(object):
         self.geoip = GeoIP(API_KEY)
 
         # start time
-        self.start_time = datetime.now() - timedelta(minutes=5)
+        self.start_time = datetime.now() - timedelta(minutes=1)
 
     def open_spider(self, spider):
         pass
@@ -206,7 +206,9 @@ class NodePipeline(object):
                 session.close()
                 return
 
-        data = None
+        data = {
+            'updated': datetime.now()
+        }
         if item['api']:
             data = {
                 'api': True,

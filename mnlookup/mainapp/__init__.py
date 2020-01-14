@@ -220,49 +220,52 @@ def main_app():
 
     dash_app.title = TITLE
 
-    dash_app.layout = html.Div([
-        navbar(), 
-        nodes_stat(),
-        map_block(),
-        dbc.Container(
-            dbc.Row([
-                dbc.Col(
-                    countries_chart(),
-                    width=4,
-                    xs=12,
-                    md=6,
-                    lg=4,
-                    className='mt-4'
-                ),
-                dbc.Col(
-                    ases_chart(),
-                    width=4,
-                    xs=12,
-                    md=6,
-                    lg=4,
-                    className='mt-4'
-                ),
-                dbc.Col(
-                    history_chart(),
-                    width=4,
-                    xs=12,
-                    lg=4,
-                    className='mt-4'
-                )
-            ]),
-            fluid=FLUID,
-            className='mb-4'
-        ),
-        html.Footer(
+    def serve_layout():
+        return html.Div([
+            navbar(), 
+            nodes_stat(),
+            map_block(),
             dbc.Container(
-                dbc.Row(
+                dbc.Row([
                     dbc.Col(
-                        html.Small("Roman Kablukov © 2020")
+                        countries_chart(),
+                        width=4,
+                        xs=12,
+                        md=6,
+                        lg=4,
+                        className='mt-4'
+                    ),
+                    dbc.Col(
+                        ases_chart(),
+                        width=4,
+                        xs=12,
+                        md=6,
+                        lg=4,
+                        className='mt-4'
+                    ),
+                    dbc.Col(
+                        history_chart(),
+                        width=4,
+                        xs=12,
+                        lg=4,
+                        className='mt-4'
                     )
-                )
+                ]),
+                fluid=FLUID,
+                className='mb-4'
             ),
-            className="p-3 mb-2 bg-light text-dark"
-        )
-    ])
+            html.Footer(
+                dbc.Container(
+                    dbc.Row(
+                        dbc.Col(
+                            html.Small("Roman Kablukov © 2020")
+                        )
+                    )
+                ),
+                className="p-3 mb-2 bg-light text-dark"
+            )
+        ])
+
+    dash_app.layout = serve_layout
 
     return dash_app

@@ -92,7 +92,7 @@ def random_api_node():
         NodeStatus.api_url
     ).filter_by(
         api=True
-    ).first()
+    ).order_by(func.rand()).first()
 
     session.close()
 
