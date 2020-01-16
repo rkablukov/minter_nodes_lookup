@@ -5,8 +5,9 @@ import dash_core_components as dcc
 import dash_bootstrap_components as dbc
 import plotly.graph_objects as go
 
-from .database import (load_nodes, load_countries, load_stat, 
-                       load_ases, random_api_node, load_history)
+from .database import (load_nodes, load_countries, load_stat,
+                       load_ases, random_api_node, load_history,
+                       load_versions)
 
 TITLE = "Minter Nodes Lookup"
 FLUID = False
@@ -21,8 +22,9 @@ def navbar():
     """
     navbar = dbc.NavbarSimple(
         children=[
-            dbc.NavItem(dbc.NavLink("Monster Graphs", href="https://mnst.vemark.ru")),
-            #dbc.DropdownMenu(
+            dbc.NavItem(dbc.NavLink("Monster Graphs",
+                                    href="https://mnst.vemark.ru")),
+            # dbc.DropdownMenu(
             #    nav=True,
             #    in_navbar=True,
             #    label='Applications',
@@ -32,11 +34,11 @@ def navbar():
             #        dbc.DropdownMenuItem(divider=True),
             #        dbc.DropdownMenuItem("Entry 3"),
             #    ],
-            #),
+            # ),
         ],
         brand=TITLE,
         brand_href="#",
-        #sticky="top",
+        # sticky="top",
         fluid=FLUID
     )
     return navbar
@@ -49,25 +51,28 @@ def nodes_stat():
     stat_block = dbc.Container(
         dbc.Row([
             dbc.Col(
-                html.Div([html.Small("Nodes"), html.Br(), html.Span(n_nodes)]), 
+                html.Div([html.Small("Nodes"), html.Br(), html.Span(n_nodes)]),
                 width=3,
                 xs=4,
                 lg=3
             ),
             dbc.Col(
-                html.Div([html.Small("Api Nodes"), html.Br(), html.Span(n_api)]), 
+                html.Div([html.Small("Api Nodes"),
+                          html.Br(), html.Span(n_api)]),
                 width=3,
                 xs=4,
                 lg=3
             ),
             dbc.Col(
-                html.Div([html.Small("Full Api Nodes"), html.Br(), html.Span(n_full_nodes)]), 
+                html.Div([html.Small("Full Api Nodes"),
+                          html.Br(), html.Span(n_full_nodes)]),
                 width=3,
                 xs=4,
                 lg=3
             ),
             dbc.Col(
-                html.Div([html.Small("Random Api Node Url"), html.Br(), html.Span(html.A(api_node, href=api_node))]), 
+                html.Div([html.Small("Random Api Node Url"), html.Br(),
+                          html.Span(html.A(api_node, href=api_node))]),
                 width=3,
                 xs=12,
                 lg=3
@@ -90,6 +95,7 @@ def map_block():
             size=9
         ),
         text=text,
+
     ))
 
     fig_map.update_layout(
@@ -99,10 +105,10 @@ def map_block():
             accesstoken=MAPBOX_ACCESS_TOKEN,
             bearing=0,
             center=go.layout.mapbox.Center(
-                #lat=53.3498,
-                #lon=-6.26031
-                #lat=(min(lat)+max(lat))/2,
-                #lon=(min(lon)+max(lon))/2
+                # lat=53.3498,
+                # lon=-6.26031
+                # lat=(min(lat)+max(lat))/2,
+                # lon=(min(lon)+max(lon))/2
                 lat=sum(lat)/len(lat),
                 lon=sum(lon)/len(lon)
             ),
@@ -132,7 +138,8 @@ def map_block():
 def countries_chart():
     countries, number_of_nodes = load_countries()
 
-    fig_countries = go.Figure([go.Bar(y=countries, x=number_of_nodes, orientation='h')])
+    fig_countries = go.Figure(
+        [go.Bar(y=countries, x=number_of_nodes, orientation='h')])
     fig_countries.update_layout(
         yaxis={'autorange': "reversed", 'fixedrange': True},
         xaxis={'side': 'top', 'fixedrange': True},
@@ -201,7 +208,26 @@ def history_chart():
             )
         )
     ]
-    return _card    
+    return _card
+
+
+def versions_chart():
+    versions, number_of_nodes = load_versions()
+
+    # Use `hole` to create a donut-like pie chart
+    _fig = go.Figure(data=[go.Pie(labels=versions, values=number_of_nodes, hole=.3)])
+
+    _card = [
+        html.H5("Node Versions"),
+        html.Div(
+            dcc.Graph(
+                id='versions-pie',
+                figure=_fig,
+                config={'displayModeBar': False}
+            )
+        )
+    ]
+    return _card
 
 
 def main_app():
@@ -222,35 +248,44 @@ def main_app():
 
     def serve_layout():
         return html.Div([
-            navbar(), 
+            navbar(),
             nodes_stat(),
             map_block(),
             dbc.Container(
-                dbc.Row([
-                    dbc.Col(
-                        countries_chart(),
-                        width=4,
-                        xs=12,
-                        md=6,
-                        lg=4,
-                        className='mt-4'
-                    ),
-                    dbc.Col(
-                        ases_chart(),
-                        width=4,
-                        xs=12,
-                        md=6,
-                        lg=4,
-                        className='mt-4'
-                    ),
-                    dbc.Col(
-                        history_chart(),
-                        width=4,
-                        xs=12,
-                        lg=4,
-                        className='mt-4'
-                    )
-                ]),
+                [
+                    dbc.Row([
+                        dbc.Col(
+                            countries_chart(),
+                            width=4,
+                            xs=12,
+                            md=6,
+                            lg=4,
+                            className='mt-4'
+                        ),
+                        dbc.Col(
+                            ases_chart(),
+                            width=4,
+                            xs=12,
+                            md=6,
+                            lg=4,
+                            className='mt-4'
+                        ),
+                        dbc.Col(
+                            history_chart(),
+                            width=4,
+                            xs=12,
+                            lg=4,
+                            className='mt-4'
+                        )
+                    ]),
+                    dbc.Row([
+                        dbc.Col(
+                            versions_chart(),
+                            width=12,
+                            className='mt-4'
+                        ),
+                    ])
+                ],
                 fluid=FLUID,
                 className='mb-4'
             ),

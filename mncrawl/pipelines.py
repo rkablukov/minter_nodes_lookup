@@ -12,7 +12,7 @@ from sqlalchemy.sql import select, insert, exists
 from sqlalchemy.orm import sessionmaker
 from mncrawl.models import (Node, NodeConnection, NodeStatus, NodeHistory,
                             db_connect, create_table)
-from mncrawl.items import NodeItem, ConnectionItem, NodeStatusItem
+from mncrawl.items import NodeItem, ConnectionItem, NodeStatusItem, NodeStatusExtendedItem
 
 from simple_geoip import GeoIP
 
@@ -97,6 +97,8 @@ class NodePipeline(object):
         if isinstance(item, ConnectionItem):
             self.handle_connection(item, spider)
         if isinstance(item, NodeStatusItem):
+            self.handle_status(item, spider)
+        if isinstance(item, NodeStatusExtendedItem):
             self.handle_status(item, spider)
 
         return item
@@ -190,6 +192,10 @@ class NodePipeline(object):
                 full_node=item['full_node']
             )
 
+            # установим атрибуты node_info
+            if isinstance(item, NodeStatusExtendedItem):
+                status.set_node_info(item)
+
             if status.api:
                 status.api_checked = datetime.now()
 
@@ -219,6 +225,20 @@ class NodePipeline(object):
         if item['full_node']:
             data['full_node'] = True
             data['full_node_checked'] = datetime.now()
+
+        if isinstance(item, NodeStatusExtendedItem):
+            data['protocol_version_p2p'] = item['protocol_version_p2p']
+            data['protocol_version_block'] = item['protocol_version_block']
+            data['protocol_version_app'] = item['protocol_version_app']
+
+            data['node_id'] = item['node_id']
+            data['listen_addr'] = item['listen_addr']
+            data['network'] = item['network']
+            data['version'] = item['version']
+            data['channels'] = item['channels']
+            data['moniker'] = item['moniker']
+            data['tx_index'] = item['tx_index']
+            data['rpc_address'] = item['rpc_address']
 
         if data:
             try:

@@ -73,6 +73,22 @@ def load_ases():
     return ases, number_of_nodes
 
 
+def load_versions():
+    session = Session()
+    rs = session.query(
+        func.count(NodeStatus.ip), 
+        NodeStatus.version
+    ).group_by(NodeStatus.version
+    ).order_by(func.count(NodeStatus.ip).desc()).all()
+
+    number_of_nodes = [x[0] for x in rs]
+    versions = [x[1] for x in rs]
+
+    session.close()
+    
+    return versions, number_of_nodes
+
+
 def load_stat():
     session = Session()
     rs = session.query(
@@ -92,7 +108,7 @@ def random_api_node():
         NodeStatus.api_url
     ).filter_by(
         api=True
-    ).order_by(func.rand()).first()
+    ).first()
 
     session.close()
 

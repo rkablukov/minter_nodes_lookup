@@ -28,3 +28,20 @@ class NodeStatusItem(scrapy.Item):
     api = scrapy.Field()
     api_url = scrapy.Field()
     full_node = scrapy.Field()
+
+
+class NodeStatusExtendedItem(NodeStatusItem):
+
+    # node_info
+    protocol_version_p2p = scrapy.Field()
+    protocol_version_block = scrapy.Field()
+    protocol_version_app = scrapy.Field()
+
+    node_id = scrapy.Field()
+    listen_addr = scrapy.Field()
+    network = scrapy.Field()
+    version = scrapy.Field()
+    channels = scrapy.Field()
+    moniker = scrapy.Field()
+    tx_index = scrapy.Field()
+    rpc_address = scrapy.Field()

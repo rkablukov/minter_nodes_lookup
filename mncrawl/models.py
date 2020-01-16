@@ -68,6 +68,34 @@ class NodeStatus(DeclarativeBase):
     api_checked = Column('api_checked', DateTime, default=datetime(1900,1,1))
     full_node_checked = Column('full_node_checked', DateTime, default=datetime(1900,1,1))
 
+    # node_info
+    protocol_version_p2p = Column('protocol_version_p2p', String(10))
+    protocol_version_block = Column('protocol_version_block', String(10))
+    protocol_version_app = Column('protocol_version_app', String(10))
+
+    node_id = Column('node_id', String(40))
+    listen_addr = Column('listen_addr', String(27))
+    network = Column('network', String(50))
+    version = Column('version', String(10))
+    channels = Column('channels', String(50))
+    moniker = Column('moniker', Text)
+    tx_index = Column('tx_index', String(3))
+    rpc_address = Column('rpc_address', String(27))
+
+    def set_node_info(self, item):
+        self.protocol_version_p2p = item['protocol_version_p2p']
+        self.protocol_version_block = item['protocol_version_block']
+        self.protocol_version_app = item['protocol_version_app']
+
+        self.node_id = item['node_id']
+        self.listen_addr = item['listen_addr']
+        self.network = item['network']
+        self.version = item['version']
+        self.channels = item['channels']
+        self.moniker = item['moniker']
+        self.tx_index = item['tx_index']
+        self.rpc_address = item['rpc_address']
+
 
 class NodeHistory(DeclarativeBase):
     __tablename__ = 'node_history'
