@@ -216,6 +216,10 @@ def versions_chart():
 
     # Use `hole` to create a donut-like pie chart
     _fig = go.Figure(data=[go.Pie(labels=versions, values=number_of_nodes, hole=.3)])
+    _fig.update_layout(
+        margin={'l': 0, 'r': 0, 't': 0, 'b': 0},
+        height=300
+    )
 
     _card = [
         html.H5("Node Versions"),
