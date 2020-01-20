@@ -141,7 +141,9 @@ def countries_chart():
     fig_countries = go.Figure(
         [go.Bar(y=countries, x=number_of_nodes, orientation='h')])
     fig_countries.update_layout(
-        yaxis={'autorange': "reversed", 'fixedrange': True},
+        yaxis={
+            #'autorange': "reversed", 
+            'fixedrange': True},
         xaxis={'side': 'top', 'fixedrange': True},
         margin={'l': 0, 'r': 0, 't': 0, 'b': 0},
         height=300,
@@ -166,7 +168,9 @@ def ases_chart():
 
     _fig = go.Figure([go.Bar(y=ases, x=number_of_nodes, orientation='h')])
     _fig.update_layout(
-        yaxis={'autorange': "reversed", 'fixedrange': True},
+        yaxis={
+            #'autorange': "reversed", 
+            'fixedrange': True},
         xaxis={'side': 'top', 'fixedrange': True},
         margin={'l': 0, 'r': 0, 't': 0, 'b': 0},
         height=300,
