@@ -13,7 +13,7 @@ def db_connect():
     Performs database connection using database settings from settings.py.
     Returns sqlalchemy engine instance
     """
-    return create_engine(get_project_settings().get("CONNECTION_STRING"))
+    return create_engine(get_project_settings().get("CONNECTION_STRING"), pool_pre_ping=True)
 
 def create_table(engine):
     DeclarativeBase.metadata.create_all(engine)
