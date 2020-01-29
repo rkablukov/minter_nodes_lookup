@@ -226,7 +226,7 @@ def versions_chart():
     )
 
     _card = [
-        html.H5("Node Versions"),
+        html.H5("Tendermint Versions"),
         html.Div(
             dcc.Graph(
                 id='versions-pie',
