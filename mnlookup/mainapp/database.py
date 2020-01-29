@@ -115,12 +115,33 @@ def random_api_node():
     return rs[0]
 
 
-def load_history():
+def load_history_bak():
     session = Session()
     rs = session.query(
         NodeHistory.date,
         NodeHistory.nodes
     ).order_by(NodeHistory.date).limit(10).all()
+
+    session.close()
+
+    dates = [x[0] for x in rs]
+    nodes = [x[1] for x in rs]
+
+    return dates, nodes
+
+
+def load_history():
+    session = Session()
+
+    t = session.query(
+        NodeHistory.date,
+        NodeHistory.nodes
+    ).order_by(NodeHistory.date.desc()).limit(10).subquery('t')
+
+    rs = session.query(
+        t.c.date,
+        t.c.nodes
+    ).order_by(t.c.date).all()
 
     session.close()
 
