@@ -11,6 +11,9 @@ def create_app(config_class=Config):
     app = Flask(__name__)
     app.config.from_object(config_class)
 
+    from mnlookup.api.controller import api
+    app.register_blueprint(api, url_prefix='/api')
+
     from mnlookup.mainapp import main_app
     dash_apps = [
         main_app(),
