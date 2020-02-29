@@ -16,6 +16,7 @@ class MinterSpider(scrapy.Spider):
 
     def __init__(self):
         self.minter_network = os.environ.get('MINTER_NETWORK')
+        self.minter_api_node = os.environ.get('MINTER_API_NODE')
 
         engine = db_connect()
         create_table(engine)
@@ -27,8 +28,8 @@ class MinterSpider(scrapy.Spider):
         session.close()
 
         if len(self.start_urls) == 0:
-            #self.start_urls = ['http://116.202.85.179:8841/net_info']
-            self.start_urls = ['http://116.202.85.179:8841/status']
+            #self.start_urls = ['http://116.202.85.179:8841/status']
+            self.start_urls = ['%s/status' % self.minter_api_node]
 
     def parse(self, response):
         j = json.loads(response.text)
